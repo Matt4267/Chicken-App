@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chicken Dashboard - Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://example.com/your-background-image.jpg'); /* Add a background image */
+            background-size: cover; /* Cover the entire background */
+            background-position: center; /* Center the image */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Center the container */
+            padding: 20px; /* Add some padding */
+            color: white; /* Change text color for better contrast */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Text shadow for readability */
+            flex-direction: column;
+        }
+        h1 {
+            text-align: center;
+            color: #ff7f50;
+            margin-bottom: 20px;
+            font-size: 2.5em; /* Increase title size */
+        }
+        .container {
+            width: 100%; /* Full width */
+            max-width: 800px; /* Limit the max width */
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            text-align: center; /* Center text */
+        }
+        .button {
+            padding: 15px 20px;
+            color: white;
+            background-color: #ff7f50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin: 10px;
+            text-decoration: none; /* Remove underline */
+            display: inline-block; /* Makes the anchor look like a button */
+        }
+        .button:hover {
+            background-color: #ff6347;
+            transform: scale(1.05);
+        }
+        .icon {
+            margin-right: 8px;
+        }
+        .info {
+            margin: 20px 0;
+            font-size: 1.1em; /* Slightly larger font for information */
+        }
+        img {
+            max-width: 100%; /* Responsive image */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 10px; /* Rounded corners for images */
+            margin: 20px 0; /* Space around images */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Chicken Dashboard!</h1>
+        <p>Your one-stop solution for managing chicken types, egg production, and sales logging.</p>
+        
+        <img src="https://example.com/your-chicken-image.jpg" alt="Chickens" /> <!-- Add an engaging image -->
+
+        <div class="info">
+            <p>🐔 Track your chicken breeds and their counts.</p>
+            <p>🥚 Monitor your egg production effortlessly.</p>
+            <p>💰 Log your sales and track your earnings.</p>
+        </div>
+
+        <a href="dashboard.html" class="button"><i class="fas fa-chicken icon"></i> Go to Dashboard</a>
+        <a href="about.html" class="button"><i class="fas fa-info-circle icon"></i> About Us</a>
+        <a href="contact.html" class="button"><i class="fas fa-envelope icon"></i> Contact</a>
+    </div>
+</body>
+</html>

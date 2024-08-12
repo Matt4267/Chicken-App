@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chicken Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8; /* Light background for contrast */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Aligns elements vertically */
+            min-height: 100vh; /* Center the container */
+            padding: 20px; /* Add some padding */
+        }
+        h1 {
+            text-align: center;
+            color: #ff7f50;
+            margin-bottom: 20px;
+            font-size: 2.5em; /* Increase title size */
+            transition: color 0.3s;
+        }
+        .container {
+            width: 100%; /* Full width */
+            max-width: 1100px; /* Limit the max width */
+            height: auto; /* Auto height */
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden; /* Prevents overflow */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Aligns items to the start */
+        }
+        .tab {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .tab button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #ff7f50;
+            transition: color 0.3s, transform 0.2s;
+            border-radius: 5px; /* Rounded buttons */
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: box-shadow 0.3s, transform 0.3s;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            background-color: #fff; /* Table background */
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #ff7f50;
+            color: white;
+        }
+        .button {
+            padding: 10px 15px;
+            color: white;
+            background-color: #ff7f50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+            width: 100%; /* Full-width button */
+        }
+        .button:hover {
+            background-color: #ff6347;
+            transform: scale(1.05);
+        }
+        .input-group {
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="number"], input[type="text"], select, input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+            margin-bottom: 10px; /* Space between inputs */
+        }
+        input[type="number"]:focus, input[type="text"]:focus, select:focus, input[type="date"]:focus {
+            border-color: #ff7f50;
+            outline: none;
+        }
+        .welcome {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #ff7f50;
+        }
+        #eggChart, #meatSalesChart {
+            max-width: 100%;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        .logout-button {
+            background-color: #f44336; /* Red color for logout */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%; /* Full-width button */
+            text-align: center;
+            text-decoration: none; /* Remove underline */
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 20px; /* Margin above the logout button */
+        }
+        .logout-button:hover {
+            background-color: #d32f2f; /* Darker red on hover */
+            transform: scale(1.05);
+        }
+        .download-button {
+            background-color: #4CAF50; /* Green color for download */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%; /* Full-width button */
+            text-align: center;
+            text-decoration: none; /* Remove underline */
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 20px; /* Margin above the download button */
+        }
+        .download-button:hover {
+            background-color: #45a049; /* Darker green on hover */
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="dashboardContainer">
+        <h1>Chicken Dashboard</h1>
+        <div class="welcome" id="welcomeMessage">Welcome to the Chicken Dashboard!</div>
+
+        <div class="tab">
+            <button onclick="showSection('chickenTypes')"><i class="fas fa-chicken"></i> Chicken Types</button>
+            <button onclick="showSection('eggProduction')"><i class="fas fa-egg"></i> Egg Production</button>
+            <button onclick="showSection('salesLog')"><i class="fas fa-money-bill-wave"></i> Sales Log</button>
+        </div>
+
+        <div class="section" id="chickenTypes">
+            <h2>Chicken Types</h2>
+            <div class="input-group">
+                <input type="text" id="chickenBreed" placeholder="Enter chicken breed" required>
+                <input type="number" id="chickenCount" placeholder="Enter number of chickens" min="0" required>
+                <button class="button" onclick="addChickens()"><i class="fas fa-plus"></i> Add Chickens</button>
+            </div>
+            <table id="chickenTable">
+                <tr>
+                    <th>Breed</th>
+                    <th>Count</th>
+                </tr>
+                <tbody id="chickenTableBody">
+                    <!-- Chicken breeds and counts will be logged here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section" id="eggProduction" style="display:none;">
+            <h2>Egg Production</h2>
+            <div class="input-group">
+                <input type="date" id="eggDate" placeholder="Date" required>
+                <input type="number" id="eggsCollected" placeholder="Eggs Collected" min="0" required>
+                <button class="button" onclick="logEggs()"><i class="fas fa-clipboard-list"></i> Log Eggs</button>
+            </div>
+            <canvas id="eggChart"></canvas>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Eggs Laid</th>
+                </tr>
+                <tbody id="eggLog">
+                    <!-- Egg logs will be added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section" id="salesLog" style="display:none;">
+            <h2>Sales Log</h2>
+            <div class="tab">
+                <button onclick="showSalesSection('meatSales')">Meat</button>
+                <button onclick="showSalesSection('eggSales')">Eggs</button>
+            </div>
+
+            <div class="salesSection" id="meatSales">
+                <div class="input-group">
+                    <input type="date" id="meatSaleDate" placeholder="Sale Date" required>
+                    <input type="text" id="meatSaleDescription" placeholder="Sale Description" required>
+                    <input type="number" id="meatSaleAmount" placeholder="Amount (KSh)" min="0" required>
+                    <button class="button" onclick="logMeatSale()">Log Meat Sale</button>
+                </div>
+                <canvas id="meatSalesChart"></canvas>
+                <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount (KSh)</th>
+                    </tr>
+                    <tbody id="meatSalesLog">
+                        <!-- Meat sales logs will be added here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="salesSection" id="eggSales" style="display:none;">
+                <div class="input-group">
+                    <input type="date" id="eggSaleDate" placeholder="Sale Date" required>
+                    <input type="text" id="eggSaleDescription" placeholder="Sale Description" required>
+                    <input type="number" id="eggSaleAmount" placeholder="Amount (KSh)" min="0" required>
+                    <button class="button" onclick="logEggSale()">Log Egg Sale</button>
+                </div>
+                <canvas id="eggSalesChart"></canvas>
+                <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount (KSh)</th>
+                    </tr>
+                    <tbody id="eggSalesLog">
+                        <!-- Egg sales logs will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <button class="download-button" onclick="downloadData()">Download Data</button>
+        <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        // Function to show specific section
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // Function to show meat or egg sales
+        function showSalesSection(sectionId) {
+            const salesSections = document.querySelectorAll('.salesSection');
+            salesSections.forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // Function to add chicken breeds to the table
+        function addChickens() {
+            const breed = document.getElementById('chickenBreed').value;
+            const count = document.getElementById('chickenCount').value;
+
+            if (breed && count > 0) {
+                const tableBody = document.getElementById('chickenTableBody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `<td>${breed}</td><td>${count}</td>`;
+                tableBody.appendChild(newRow);
+                
+                // Clear inputs
+                document.getElementById('chickenBreed').value = '';
+                document.getElementById('chickenCount').value = '';
+            }
+        }
+
+        // Function to log eggs collected
+        function logEggs() {
+            const date = document.getElementById('eggDate').value;
+            const eggs = document.getElementById('eggsCollected').value;
+
+            if (date && eggs > 0) {
+                const eggLog = document.getElementById('eggLog');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `<td>${date}</td><td>${eggs}</td>`;
+                eggLog.appendChild(newRow);
+                updateEggChart();
+                
+                // Clear inputs
+                document.getElementById('eggDate').value = '';
+                document.getElementById('eggsCollected').value = '';
+            }
+        }
+
+        // Chart logic for egg production
+        const eggChartContext = document.getElementById('eggChart').getContext('2d');
+        let eggChart;
+
+        function updateEggChart() {
+            const labels = [];
+            const data = [];
+
+            document.querySelectorAll('#eggLog tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length) {
+                    labels.push(cells[0].innerText); // Date
+                    data.push(cells[1].innerText); // Eggs
+                }
+            });
+
+            if (eggChart) {
+                eggChart.destroy(); // Destroy previous chart instance
+            }
+
+            eggChart = new Chart(eggChartContext, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Eggs Collected',
+                        data: data,
+                        borderColor: '#ff7f50',
+                        backgroundColor: 'rgba(255, 127, 80, 0.2)',
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to log meat sales
+        function logMeatSale() {
+            const date = document.getElementById('meatSaleDate').value;
+            const description = document.getElementById('meatSaleDescription').value;
+            const amount = document.getElementById('meatSaleAmount').value;
+
+            if (date && description && amount > 0) {
+                const meatSalesLog = document.getElementById('meatSalesLog');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `<td>${date}</td><td>${description}</td><td>${amount}</td>`;
+                meatSalesLog.appendChild(newRow);
+                updateMeatSalesChart();
+
+                // Clear inputs
+                document.getElementById('meatSaleDate').value = '';
+                document.getElementById('meatSaleDescription').value = '';
+                document.getElementById('meatSaleAmount').value = '';
+            }
+        }
+
+        // Chart logic for meat sales
+        const meatSalesChartContext = document.getElementById('meatSalesChart').getContext('2d');
+        let meatSalesChart;
+
+        function updateMeatSalesChart() {
+            const labels = [];
+            const data = [];
+
+            document.querySelectorAll('#meatSalesLog tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length) {
+                    labels.push(cells[0].innerText); // Date
+                    data.push(cells[2].innerText); // Amount
+                }
+            });
+
+            if (meatSalesChart) {
+                meatSalesChart.destroy(); // Destroy previous chart instance
+            }
+
+            meatSalesChart = new Chart(meatSalesChartContext, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Meat Sales',
+                        data: data,
+                        backgroundColor: '#ff6347',
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to log egg sales
+        function logEggSale() {
+            const date = document.getElementById('eggSaleDate').value;
+            const description = document.getElementById('eggSaleDescription').value;
+            const amount = document.getElementById('eggSaleAmount').value;
+
+            if (date && description && amount > 0) {
+                const eggSalesLog = document.getElementById('eggSalesLog');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `<td>${date}</td><td>${description}</td><td>${amount}</td>`;
+                eggSalesLog.appendChild(newRow);
+                updateEggSalesChart();
+
+                // Clear inputs
+                document.getElementById('eggSaleDate').value = '';
+                document.getElementById('eggSaleDescription').value = '';
+                document.getElementById('eggSaleAmount').value = '';
+            }
+        }
+
+        // Chart logic for egg sales
+        const eggSalesChartContext = document.getElementById('eggSalesChart').getContext('2d');
+        let eggSalesChart;
+
+        function updateEggSalesChart() {
+            const labels = [];
+            const data = [];
+
+            document.querySelectorAll('#eggSalesLog tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length) {
+                    labels.push(cells[0].innerText); // Date
+                    data.push(cells[2].innerText); // Amount
+                }
+            });
+
+            if (eggSalesChart) {
+                eggSalesChart.destroy(); // Destroy previous chart instance
+            }
+
+            eggSalesChart = new Chart(eggSalesChartContext, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Egg Sales',
+                        data: data,
+                        backgroundColor: '#ffd700',
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to download data
+        function downloadData() {
+            let csvContent = "data:text/csv;charset=utf-8," 
+                + "Date,Description,Amount (KSh)\n" 
+                + meatSalesData.map(e => `${e.date},${e.description},${e.amount}`).join("\n")
+                + "\nEgg Sales:\n" 
+                + eggSalesData.map(e => `${e.date},${e.description},${e.amount}`).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "sales_log.csv");
+            document.body.appendChild(link); // Required for FF
+
+            link.click(); // This will download the data file
+        }
+
+        // Function to log out
+        function logout() {
+    // Handle logout logic (e.g., redirect to login page)
+    alert('Are you sure ?');
+    window.location.href = 'login.html'; // Redirect to login page
+}
+
+    </script>
+</body>
+</html>
